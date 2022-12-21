@@ -1,0 +1,73 @@
+repeat wait() until game:GetService("Players").LocalPlayer.Character ~= nil
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local WS = game:GetService("Workspace")
+
+local plr = Players.LocalPlayer
+local char = plr.Character
+
+local CommonMenu = require(ReplicatedStorage:WaitForChild("CommonMenu"))
+local CommonMenuEvent = ReplicatedStorage:WaitForChild("CommonMenuEvent")
+
+local backpack = plr:WaitForChild("Backpack")
+local hum = char.Humanoid
+
+local function teleportCheck()
+	if char.HumanoidRootPart == nil then CommonMenuEvent:FireServer() end
+			local ps1 = char.HumanoidRootPart.Position
+			delay(1, function()
+				local ps2 = char.HumanoidRootPart.Position
+			if (ps2 - ps1).magnitude >= 30 then
+				CommonMenuEvent:FireServer()
+				end
+		end)
+end
+
+
+print(1)
+local function humanoidCheck()
+	print(2)
+	if hum.MaxHealth >= CommonMenu.MaxHealth then
+		CommonMenuEvent:FireServer()
+	end
+	
+	if hum.WalkSpeed >= CommonMenu.MaxWalkSpeed then
+		CommonMenuEvent:FireServer()
+	end
+	
+	if hum.JumpPower >= CommonMenu.MaxJumpPower then
+		CommonMenuEvent:FireServer()
+	end
+	
+	
+	wait(1)
+end
+
+
+
+if CommonMenu["Anti-Fling"] == true then
+	char.HumanoidRootPart.ChildAdded:Connect(function(object)
+		if object:IsA("BodyThrust") then
+			CommonMenuEvent:FireServer()
+		end
+	end)
+end
+
+
+if CommonMenu["Anti-Fly"] == true then
+	char.HumanoidRootPart.ChildAdded:Connect(function(object)
+		if object:IsA("BodyGyro") or object:IsA("BodyVelocity") then
+			CommonMenuEvent:FireServer()
+
+		end
+	end)
+end
+
+
+
+if CommonMenu["Anti-Teleport"] == true then
+	while wait() do
+		teleportCheck()
+		humanoidCheck()
+	end
+end
